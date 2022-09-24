@@ -5,7 +5,7 @@
   --vt-c-white-mute: #f2f2f2;
 
   --vt-c-black: #000000;
-  --vt-c-black-soft: #222222;
+  --vt-c-black-soft: #181818;
   --vt-c-black-mute: #282828;
 
   --vt-c-indigo: #2c3e50;
@@ -33,13 +33,17 @@
 
   --color-heading: var(--vt-c-text-dark-1);
   --color-text: var(--vt-c-text-dark-1);
+}
 
+/* semantic number variables for this project */
+:root {
   --section-gap: 160px;
   --slip: 0.5rem;
   --slip-tablet: 1rem;
   --slip-desktop: 1.5rem;
   --border-radius: 32px 8px;
   --border-radius-full: 32px;
+  --border-radius-quarter: 8px;
   --padding-gap: 12px;
 }
 

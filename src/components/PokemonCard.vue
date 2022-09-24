@@ -1,14 +1,20 @@
 <template>
-  <div class="card">
-    <div class="card-header py-4">
-      <img alt="Vue logo" class="logo" src="@/assets/pokedex-logo.png" />
+  <div class="row align-items-center justify-content-space-around card">
+    <div class="col-4 col-md-5 card-header py-4">
+      <img
+        alt="Vue pokemon-logo"
+        class="pokemon-logo pointer"
+        src="@/assets/pokedex-logo.png"
+        @click="$emit('show-pokemon-image')"
+      />
     </div>
-    <div class="card-content">
-      <p class="text-pokemon-number">No.001</p>
+    <div class="col-8 col-md-7 card-content text-left">
+      <p class="text-pokemon-title">No. 001</p>
       <p class="text-pokemon-name"><strong>Bulbasaur</strong></p>
-      <br />
       <p class="text-pokemon-title">max CP:</p>
       <p class="text-pokemon-cp">951</p>
+    </div>
+    <div class="col-12 card-content">
       <p class="text-pokemon-title">Type</p>
       <div class="row chip justify-content-center pt-2">
         <div class="col">
@@ -37,29 +43,30 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+defineEmits(["show-pokemon-image"]);
+</script>
 
 <style lang="css" scoped>
-.card-header .logo {
+.card-header .pokemon-logo {
   width: 100%;
-  max-width: 128px;
+  max-width: 96px;
   height: auto;
+  border-radius: var(--border-radius-quarter);
 }
 
 .card-content {
   padding: var(--padding-gap);
   color: #f6f6f6;
-  font-size: 1.15em;
+  font-size: 1em;
 }
 
-.card-content .text-pokemon-number {
-  font-size: 1.1em;
+.card-content .text-pokemon-title {
+  font-size: 0.9em;
 }
 .card-content .text-pokemon-name {
   font-size: 1.25em;
-}
-.card-content .text-pokemon-number {
-  font-size: 1.1em;
+  word-break: break-all;
 }
 .card-content .text-pokemon-cp {
   color: var(--primary-text-orange);

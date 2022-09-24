@@ -3,6 +3,22 @@
 Util
 ===================================================================
 */
+.d-block {
+  display: block;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.d-contents {
+  display: contents;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
 .padding-none {
   padding: 0px !important;
 }
@@ -25,6 +41,10 @@ Util
 
 .justify-content-center {
   justify-content: center;
+}
+
+.justify-content-space-around {
+  justify-content: space-around;
 }
 
 .align-items-start {
