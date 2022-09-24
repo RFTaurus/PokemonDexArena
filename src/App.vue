@@ -24,7 +24,7 @@ import { RouterView } from "vue-router";
 .pokedex-logo-wrapper {
   display: inline-block;
   width: 100%;
-  max-width: 240px;
+  max-width: 160px;
 }
 
 .pokedex-logo {

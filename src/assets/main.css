@@ -5,7 +5,7 @@
   width: 100%;
   max-width: 1024px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
 
   font-weight: normal;
 }
@@ -18,8 +18,8 @@ a,
 }
 
 .card {
-  background: #181818;
-  border: 8px solid #f68522;
+  background-color: #181818;
+  border: 8px solid var(--primary-text-orange);
   border-radius: var(--border-radius);
   padding: var(--padding-gap);
 }

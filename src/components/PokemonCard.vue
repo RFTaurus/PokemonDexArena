@@ -1,7 +1,7 @@
 <template>
   <div class="card">
-    <div class="card-header">
-      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" />
+    <div class="card-header py-4">
+      <img alt="Vue logo" class="logo" src="@/assets/pokedex-logo.png" />
     </div>
     <div class="card-content">
       <p class="text-pokemon-number">No.001</p>
@@ -41,7 +41,6 @@
 
 <style lang="css" scoped>
 .card-header .logo {
-  transform: scale(1);
   width: 100%;
   max-width: 128px;
   height: auto;
@@ -63,7 +62,7 @@
   font-size: 1.1em;
 }
 .card-content .text-pokemon-cp {
-  color: #f68522;
+  color: var(--primary-text-orange);
   font-size: 1.2em;
   font-weight: bold;
 }
