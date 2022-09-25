@@ -18,30 +18,7 @@
       <p class="text-pokemon-title">max CP:</p>
       <p class="text-pokemon-cp">{{ maxCP }}</p>
       <p class="text-pokemon-title">Type</p>
-      <div v-if="types?.length !== 0" class="row chip-container">
-        <div
-          v-for="(type, index) in types"
-          :key="index"
-          :style="index > 0 ? 'margin-left: 4px' : ''"
-        >
-          <div
-            class="chip"
-            :style="`background-color: ${pokemonChipTypeBackground[type]}`"
-          >
-            <span>{{ type }}</span>
-          </div>
-        </div>
-      </div>
-      <div v-else class="row chip-container pt-2">
-        <div>
-          <div
-            class="chip"
-            :style="`background-color: ${pokemonChipTypeBackground['???']}`"
-          >
-            <span>???</span>
-          </div>
-        </div>
-      </div>
+      <PokeChip :chip-types="types" />
     </div>
     <div class="col-12">
       <router-link :to="`/pokemon-detail/${name}`">
@@ -52,9 +29,8 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import PokeButton from "./base/PokeButton.vue";
-import { POKEMON_TYPES_COLOR } from "../utils/constant";
+import PokeChip from "./base/PokeChip.vue";
 
 defineEmits(["show-pokemon-image", "goto-pokemon-detail"]);
 defineProps({
@@ -86,8 +62,6 @@ defineProps({
     required: true,
   },
 });
-
-const pokemonChipTypeBackground = ref(POKEMON_TYPES_COLOR);
 </script>
 
 <style lang="css" scoped>
@@ -119,22 +93,6 @@ const pokemonChipTypeBackground = ref(POKEMON_TYPES_COLOR);
   font-weight: bold;
 }
 
-.card-content .chip {
-  width: 100%;
-  max-width: 128px;
-}
-
-.card-content .chip {
-  color: var(--vt-c-white);
-  width: fit-content;
-  padding: 0px 8px;
-  padding-bottom: 2px;
-  margin: 4px auto;
-  font-size: 0.7em;
-  font-weight: bold;
-  border-radius: var(--border-radius-full);
-}
-
 @media (min-width: 768px) {
   .card-header .pokemon-logo {
     width: 100%;
@@ -144,16 +102,6 @@ const pokemonChipTypeBackground = ref(POKEMON_TYPES_COLOR);
     max-height: 160px;
     object-fit: contain;
     border-radius: var(--border-radius-quarter);
-  }
-
-  .card-content .chip {
-    padding: 0px 6px;
-    padding-bottom: 2px;
-  }
-
-  .card-content .chip span {
-    padding: 2px calc(var(--padding-gap));
-    font-size: 0.75em;
   }
 }
 
@@ -169,16 +117,8 @@ const pokemonChipTypeBackground = ref(POKEMON_TYPES_COLOR);
     transition: 0.5s;
   }
 
-  .card-content .chip-container {
-    justify-content: center;
-  }
-
   .card-content {
     text-align: center;
-  }
-
-  .card-content .chip {
-    justify-content: center;
   }
 }
 </style>

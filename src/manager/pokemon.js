@@ -63,59 +63,53 @@ export function fetchPokemonDataListDetail({ name }) {
     method: "post",
     data: {
       query: `
-        query fetchPokemonDataListDetail(
+        query fetchPokemonDataList(
           $name: String
         ) {
           pokemon(name: $name) {
-            query fetchPokemonDataList(
-              $name: String
-            ) {
-              pokemon(name: $name) {
-                id
-                number
+            id
+            number
+            name
+            weight {
+              minimum
+              maximum
+            }
+            height {
+              minimum
+              maximum
+            }
+            classification
+            types
+            resistant
+            attacks {
+              fast {
                 name
-                weight {
-                  minimum
-                  maximum
-                }
-                height {
-                  minimum
-                  maximum
-                }
-                classification
-                types
-                resistant
-                attacks {
-                  fast {
-                    name
-                    type
-                    damage
-                  }
-                  special {
-                    name
-                    type
-                    damage
-                  }
-                }
-                weaknesses
-                fleeRate
-                maxCP
-                evolutions {
-                  id
-                  name
-                  evolutionRequirements {
-                    amount
-                    name
-                  }
-                  image
-                }
-                evolutionRequirements {
-                  name
-                  amount
-                }
-                image
+                type
+                damage
+              }
+              special {
+                name
+                type
+                damage
               }
             }
+            weaknesses
+            fleeRate
+            maxCP
+            evolutions {
+              id
+              name
+              evolutionRequirements {
+                amount
+                name
+              }
+              image
+            }
+            evolutionRequirements {
+              name
+              amount
+            }
+            image
           }
         }
       `,
