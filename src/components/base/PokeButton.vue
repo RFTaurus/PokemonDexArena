@@ -1,21 +1,38 @@
 <template>
   <div>
-    <button class="button-pokemon">Search</button>
+    <button
+      :class="`button-pokemon pointer ${isSecondary ? 'secondary' : ''}`"
+      @click="$emit('btn-action')"
+    >
+      {{ btnText }}
+    </button>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+defineEmits(["btn-action"]);
+defineProps({
+  isSecondary: {
+    type: Boolean,
+    default: false,
+  },
+  btnText: {
+    type: String,
+    default: "Click Me!",
+  },
+});
+</script>
 
 <style lang="css" scoped>
 .button-pokemon {
   background-color: var(--primary-text-orange);
-  color: #181818;
+  color: var(--vt-c-black-soft);
   font-weight: bold;
   border: 2px solid var(--primary-text-orange);
   border-radius: var(--border-radius-full);
   padding: 4px;
   font-size: 1em;
-  cursor: pointer;
+  width: 100%;
 }
 
 .button-pokemon.secondary {
@@ -32,7 +49,6 @@
     border-radius: var(--border-radius-full);
     padding: 8px;
     font-size: 1em;
-    cursor: pointer;
   }
 }
 </style>

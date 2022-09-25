@@ -4,21 +4,22 @@
       <div class="row align-items-center justify-content-center">
         <div class="col-12 col-md-8">
           <input
+            v-model="searchPokemon"
             type="text"
             class="search-bar"
             placeholder="Search Pokemon Name..."
+            @keyup.enter="getPokemonData"
           />
         </div>
         <div class="col-6 col-md-2 my-1">
-          <button class="button-pokemon">Search</button>
+          <PokeButton :btn-text="'Search'" @btn-action="getPokemonData" />
         </div>
         <div class="col-6 col-md-2 my-1">
-          <button
-            class="button-pokemon secondary"
-            @click="$emit('open-filter')"
-          >
-            Filter
-          </button>
+          <PokeButton
+            :is-secondary="true"
+            :btn-text="'Filter'"
+            @btn-action="$emit('open-filter')"
+          />
         </div>
       </div>
     </div>
@@ -26,7 +27,56 @@
 </template>
 
 <script setup>
-defineEmits(["open-filter"]);
+import { ref } from "vue";
+import PokeButton from "./base/PokeButton.vue";
+import {
+  fetchPokemonDataList,
+  fetchPokemonDataListByName,
+} from "../manager/pokemon";
+
+const emit = defineEmits(["open-filter", "search-pokemon"]);
+
+const searchPokemon = ref("");
+const searchTimeout = ref(null);
+
+const getPokemonData = () => {
+  searchTimeout.value = setTimeout(() => {
+    if (searchPokemon.value !== "") {
+      fetchPokemonDataByName();
+    } else {
+      fetchPokemonData();
+    }
+  }, 1000);
+};
+
+const fetchPokemonDataByName = () => {
+  fetchPokemonDataListByName({ name: searchPokemon.value })
+    .then((response) => {
+      const { data } = response.data;
+      if (data?.length !== 0 && data[0]) {
+        return emit("search-pokemon", [data.pokemon]);
+      }
+      return emit("search-pokemon", []);
+    })
+    .catch((e) => {
+      console.log(e);
+      return emit("search-pokemon", []);
+    });
+};
+
+const fetchPokemonData = () => {
+  fetchPokemonDataList({ totalData: 16 })
+    .then((response) => {
+      const { data } = response.data;
+      if (data?.length !== 0) {
+        return emit("search-pokemon", [...data.pokemons]);
+      }
+    })
+    .catch((e) => {
+      console.log(e);
+      return emit("search-pokemon", []);
+    });
+};
 </script>
 
 <style lang="css" scoped>
@@ -45,7 +95,7 @@ defineEmits(["open-filter"]);
 }
 
 .search-bar {
-  background-color: #181818;
+  background-color: var(--vt-c-black-soft);
   color: var(--vt-c-white);
   font-size: 0.9em;
   padding: 8px;
@@ -56,34 +106,5 @@ defineEmits(["open-filter"]);
 
 .search-bar::placeholder {
   font-size: 0.85em;
-}
-
-.button-pokemon {
-  background-color: var(--primary-text-orange);
-  color: #181818;
-  font-weight: bold;
-  border: 2px solid var(--primary-text-orange);
-  border-radius: var(--border-radius-full);
-  padding: 4px;
-  font-size: 1em;
-  cursor: pointer;
-}
-
-.button-pokemon.secondary {
-  background-color: #311b07;
-  color: var(--primary-text-orange);
-  border: 2px solid var(--primary-text-orange);
-}
-
-@media (min-width: 768px) {
-  .button-pokemon {
-    background-color: var(--primary-text-orange);
-    color: var(--vt-c-black);
-    border: none;
-    border-radius: var(--border-radius-full);
-    padding: 8px;
-    font-size: 1em;
-    cursor: pointer;
-  }
 }
 </style>

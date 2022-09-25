@@ -4,16 +4,33 @@
       <h1>PokemonDex Arena Card List</h1>
     </div>
 
-    <PokemonControlSection @open-filter="showModal" />
+    <PokemonControlSection
+      @open-filter="showModal"
+      @search-pokemon="getPokemonData"
+    />
 
-    <div class="row align-items-center justify-content-center text-center">
+    <div
+      ref="infiniteScrollComponent"
+      v-if="pokemons?.length !== 0"
+      class="row align-items-center justify-content-space-between text-center"
+    >
       <div
-        v-for="index in 13"
+        v-for="(pokemon, index) in pokemons"
         :key="index"
         class="col-12 col-md-6 col-lg-3 my-4"
       >
-        <PokemonCard @show-pokemon-image="showModalImage" />
+        <PokemonCard
+          :image="pokemon.image"
+          :number="pokemon.number"
+          :name="pokemon.name"
+          :max-c-p="pokemon.maxCP"
+          :types="pokemon.types"
+          @show-pokemon-image="showModalImage(pokemon.image)"
+        />
       </div>
+    </div>
+    <div v-else>
+      <h3 class="text-center">There is no Pokemon Card List</h3>
     </div>
 
     <PokeModal :modal-active="modalActive" @close-modal="showModal">
@@ -21,15 +38,29 @@
         <h3>Filter Pokemon Type</h3>
         <div class="row align-items-start my-4">
           <div
-            v-for="(type, index) in PokemonTypes"
+            v-for="(type, index) in pokemonTypes"
             :key="index"
             class="col-6 col-md-4"
           >
             <label class="checkbox-container">
               {{ type }}
-              <input type="checkbox" checked="checked" />
+              <input v-model="checkedFilter" type="checkbox" :value="type" />
               <span class="checkmark"></span>
             </label>
+          </div>
+        </div>
+        <div class="mt-4">
+          <div class="row align-items-center">
+            <div class="col-12 col-md-6">
+              <PokeButton
+                :is-secondary="true"
+                :btn-text="'Reset'"
+                @btn-action="resetFilterData"
+              />
+            </div>
+            <div class="col-12 col-md-6">
+              <PokeButton :btn-text="'Apply'" @btn-action="applyFilter" />
+            </div>
           </div>
         </div>
       </div>
@@ -42,7 +73,7 @@
           <div class="pokedex-image-wrapper">
             <img
               class="pokedex-image"
-              src="https://img.pokemondb.net/artwork/ivysaur.jpg"
+              :src="getImageUrl(selectedImage)"
               alt="Pokemon"
             />
           </div>
@@ -53,22 +84,107 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import PokemonCard from "../components/PokemonCard.vue";
 import PokeModal from "../components/base/PokeModal.vue";
 import PokemonControlSection from "../components/PokemonControlSection.vue";
 import { POKEMON_TYPES } from "../utils/constant";
+import { fetchPokemonDataList } from "../manager/pokemon";
+import PokeButton from "../components/base/PokeButton.vue";
 
 const modalActive = ref(null);
 const modalActiveImage = ref(null);
-const PokemonTypes = POKEMON_TYPES;
+const pokemonTypes = ref(POKEMON_TYPES);
+const pokemonsOriginal = ref([]);
+const pokemons = ref([]);
+const infiniteScrollComponent = ref(null);
+const defaultImage = ref("../assets/pokedex-logo.png");
+let selectedImage = ref("../assets/pokedex-logo.png");
+let checkedFilter = ref(POKEMON_TYPES);
+let isLoading = ref(false);
+
+onMounted(() => {
+  fetchPokemonData();
+  setTimeout(() => {
+    window.addEventListener("scroll", infiniteScroll);
+  }, 1000);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", infiniteScroll);
+});
 
 const showModal = () => {
   modalActive.value = !modalActive.value;
 };
 
-const showModalImage = () => {
+const showModalImage = (image = defaultImage.value) => {
+  selectedImage.value = image;
   modalActiveImage.value = !modalActiveImage.value;
+};
+
+const getImageUrl = (image = defaultImage.value) => {
+  return new URL(image, import.meta.url).href;
+};
+
+const getPokemonData = (pokemonData) => {
+  pokemons.value = pokemonData;
+};
+
+const resetFilterData = async () => {
+  checkedFilter.value = POKEMON_TYPES;
+  pokemons.value = [...pokemonsOriginal.value];
+  showModal();
+};
+
+const applyFilter = () => {
+  pokemons.value = [...pokemonsOriginal.value];
+  pokemons.value = pokemons.value.filter((item) => {
+    return item.types.some((type) => {
+      return checkedFilter.value.includes(type);
+    });
+  });
+  showModal();
+};
+
+const infiniteScroll = () => {
+  let element = infiniteScrollComponent.value;
+  if (element.getBoundingClientRect().bottom <= window.innerHeight + 1) {
+    fetchPokemonData();
+  }
+};
+
+const fetchPokemonData = () => {
+  const totalData =
+    pokemonsOriginal?.value?.length !== 0
+      ? pokemonsOriginal?.value?.length + 16
+      : 16;
+  if (pokemonsOriginal?.value?.length !== totalData) {
+    isLoading.value = true;
+  }
+  fetchPokemonDataList({
+    totalData,
+  })
+    .then((response) => {
+      const { data } = response.data;
+      if (data?.length !== 0) {
+        pokemonsOriginal.value = [...data.pokemons];
+        pokemons.value = [...pokemonsOriginal.value];
+        pokemons.value = pokemons.value.filter((item) => {
+          return item.types.some((type) => {
+            return checkedFilter.value.includes(type);
+          });
+        });
+        isLoading.value = false;
+        return;
+      }
+      isLoading.value = false;
+    })
+    .catch((e) => {
+      console.log(e);
+      isLoading.value = false;
+      return;
+    });
 };
 </script>
 
