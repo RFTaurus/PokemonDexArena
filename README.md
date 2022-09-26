@@ -5,6 +5,12 @@
 ## Demo URL
 [PokemonDex Arena](https://www.pokemondexarena.creativepartyguild.com/)
 
+## Project Documentation
+[Documentation](https://docs.google.com/document/d/1IQY-ltNDrooRwhlfDq3V64WV1JvlKKNKB83-Cp82G24/edit?usp=sharing)
+
+## Low Fidelity Design
+[Figma URL](https://www.figma.com/file/NsYLaQb7vJj8X4KyG3QYGJ/Pokemon-Dex-Arena-Low-Fidelity-Design?node-id=0%3A1)
+
 ## Customize configuration
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
