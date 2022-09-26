@@ -28,11 +28,11 @@
 
 <script setup>
 import { ref } from "vue";
-import PokeButton from "./base/PokeButton.vue";
 import {
   fetchPokemonDataList,
   fetchPokemonDataListByName,
 } from "../manager/pokemon";
+import PokeButton from "./base/PokeButton.vue";
 
 const emit = defineEmits(["open-filter", "search-pokemon"]);
 
@@ -53,7 +53,7 @@ const fetchPokemonDataByName = () => {
   fetchPokemonDataListByName({ name: searchPokemon.value })
     .then((response) => {
       const { data } = response.data;
-      if (data?.length !== 0 && data[0]) {
+      if (data?.pokemon?.id) {
         return emit("search-pokemon", [data.pokemon]);
       }
       return emit("search-pokemon", []);

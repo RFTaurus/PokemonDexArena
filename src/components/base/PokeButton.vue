@@ -36,7 +36,7 @@ defineProps({
 }
 
 .button-pokemon.secondary {
-  background-color: #311b07;
+  background-color: var(--secondary-text-orange);
   color: var(--primary-text-orange);
   border: 2px solid var(--primary-text-orange);
 }

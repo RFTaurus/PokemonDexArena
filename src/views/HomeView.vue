@@ -1,8 +1,6 @@
 <template>
   <div class="container">
-    <div class="page-header text-center">
-      <h1>PokemonDex Arena Card List</h1>
-    </div>
+    <PokePageTitle :page-title="'PokemonDex Arena Card List'" />
 
     <PokemonControlSection
       @open-filter="showModal"
@@ -12,7 +10,7 @@
     <div
       ref="infiniteScrollComponent"
       v-if="pokemons?.length !== 0"
-      class="row align-items-center justify-content-space-between text-center"
+      class="row align-items-center justify-content-space-between text-center pb-4"
     >
       <div
         v-for="(pokemon, index) in pokemons"
@@ -26,6 +24,8 @@
           :max-c-p="pokemon.maxCP"
           :types="pokemon.types"
           @show-pokemon-image="showModalImage(pokemon.image)"
+          @add-favourite="addFavourite"
+          @add-team="addTeam"
         />
       </div>
     </div>
@@ -91,6 +91,7 @@ import PokemonControlSection from "../components/PokemonControlSection.vue";
 import { POKEMON_TYPES } from "../utils/constant";
 import { fetchPokemonDataList } from "../manager/pokemon";
 import PokeButton from "../components/base/PokeButton.vue";
+import PokePageTitle from "../components/base/PokePageTitle.vue";
 
 const modalActive = ref(null);
 const modalActiveImage = ref(null);
@@ -147,6 +148,14 @@ const applyFilter = () => {
   showModal();
 };
 
+const addFavourite = (pokemonData) => {
+  console.log("cek pokemonData Favourite : ", pokemonData);
+};
+
+const addTeam = (pokemonData) => {
+  console.log("cek pokemonData Team : ", pokemonData);
+};
+
 const infiniteScroll = () => {
   let element = infiniteScrollComponent.value;
   if (element.getBoundingClientRect().bottom <= window.innerHeight + 1) {
@@ -169,6 +178,11 @@ const fetchPokemonData = () => {
       const { data } = response.data;
       if (data?.length !== 0) {
         pokemonsOriginal.value = [...data.pokemons];
+        pokemonsOriginal.value = pokemonsOriginal.value.map((item) => ({
+          ...item,
+          isFavourite: false,
+          isTeam: false,
+        }));
         pokemons.value = [...pokemonsOriginal.value];
         pokemons.value = pokemons.value.filter((item) => {
           return item.types.some((type) => {
@@ -189,12 +203,6 @@ const fetchPokemonData = () => {
 </script>
 
 <style lang="css" scoped>
-.page-header {
-  color: var(--primary-text-orange);
-  font-size: 1em;
-}
-
-/* Customize the label (the container) */
 .checkbox-container {
   display: block;
   position: relative;
@@ -207,7 +215,6 @@ const fetchPokemonData = () => {
   user-select: none;
 }
 
-/* Hide the browser's default checkbox */
 .checkbox-container input {
   position: absolute;
   opacity: 0;
@@ -221,7 +228,6 @@ const fetchPokemonData = () => {
   outline: none;
 }
 
-/* Create a custom checkbox */
 .checkmark {
   position: absolute;
   top: 5px;
@@ -232,29 +238,24 @@ const fetchPokemonData = () => {
   outline: none;
 }
 
-/* On mouse-over, add a grey background color */
 .checkbox-container:hover input ~ .checkmark {
   background-color: var(--vt-c-white);
 }
 
-/* When the checkbox is checked, add a blue background */
 .checkbox-container input:checked ~ .checkmark {
   background-color: var(--primary-text-orange);
 }
 
-/* Create the checkmark/indicator (hidden when not checked) */
 .checkmark:after {
   content: "";
   position: absolute;
   display: none;
 }
 
-/* Show the checkmark when checked */
 .checkbox-container input:checked ~ .checkmark:after {
   display: block;
 }
 
-/* Style the checkmark/indicator */
 .checkbox-container .checkmark:after {
   left: 4px;
   top: 0px;
@@ -277,11 +278,5 @@ const fetchPokemonData = () => {
   width: 100%;
   height: auto;
   border-radius: var(--border-radius-quarter);
-}
-
-@media (min-width: 768px) {
-  .page-header {
-    font-size: 1.25em;
-  }
 }
 </style>

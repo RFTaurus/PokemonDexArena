@@ -10,6 +10,7 @@
 
   --vt-c-indigo: #2c3e50;
   --primary-text-orange: #f68522;
+  --secondary-text-orange: #311b07;
 
   --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
   --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
@@ -45,6 +46,7 @@
   --border-radius-full: 32px;
   --border-radius-quarter: 10px;
   --padding-gap: 12px;
+  --padding-gap-half: 6px;
 }
 
 @media (prefers-color-scheme: dark) {
