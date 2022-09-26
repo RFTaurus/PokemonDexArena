@@ -1,6 +1,6 @@
 # PokemonDexArena
 
-This template should help get you started developing with Vue 3 in Vite.
+PokemonDexArena is a Platform for Pokemon Trainer to find the detail of each Pokemon that Exist in the world. This platform is develop using PokeAPI.
 
 ## Recommended IDE Setup
 
