@@ -13,8 +13,8 @@
       class="row align-items-center justify-content-space-between text-center pb-4"
     >
       <div
-        v-for="(pokemon, index) in pokemons"
-        :key="index"
+        v-for="pokemon in pokemons"
+        :key="pokemon.id"
         class="col-12 col-md-6 col-lg-3 my-4"
       >
         <PokemonCard
