@@ -441,4 +441,17 @@ const isFavouritePokemon = (id) => {
 .card-lite:last-of-type {
   border-bottom: none;
 }
+
+@media (min-width: 768px) {
+  .floating-button-wrapper {
+    background-color: var(--vt-c-white);
+    padding: 0px 12px;
+    border-radius: 50%;
+  }
+
+  .floating-button-wrapper .floating-button {
+    font-size: 2em;
+    color: red;
+  }
+}
 </style>
