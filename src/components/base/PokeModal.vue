@@ -99,14 +99,21 @@ defineProps({
   transition: 0.5s;
 }
 
-@media (min-width: 1024) {
+@media (min-width: 768px) {
   .modal-content {
     width: 100%;
-    max-width: 1024px;
-    background-color: var(--vt-c-white);
+    max-width: 480px;
     align-self: flex-start;
     margin-top: 16px;
-    padding: 4px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal-content {
+    width: 100%;
+    max-width: 640px;
+    align-self: flex-start;
+    margin-top: 16px;
   }
 }
 </style>

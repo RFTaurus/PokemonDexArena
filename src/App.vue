@@ -16,8 +16,20 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from "vue";
 import { RouterView } from "vue-router";
-// import SiteNavigation from "./components/SiteNavigation.vue";
+import { PSEUDOLOCAL_DATABASE_PATH } from "./utils/constant";
+import { initDataPath } from "./store/pseudolocalDatabase";
+
+const pokemonFavouritesPath = ref(PSEUDOLOCAL_DATABASE_PATH.pokemonFavourites);
+const pokemonTeamsPath = ref(PSEUDOLOCAL_DATABASE_PATH.pokemonTeams);
+const historyPath = ref(PSEUDOLOCAL_DATABASE_PATH.historyPath);
+
+onMounted(() => {
+  initDataPath(pokemonFavouritesPath.value, []);
+  initDataPath(pokemonTeamsPath.value, []);
+  initDataPath(historyPath.value, []);
+});
 </script>
 
 <style lang="css" scoped>
