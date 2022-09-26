@@ -22,6 +22,13 @@
           />
         </div>
       </div>
+      <div class="row align-items-center justify-content-center">
+        <div class="col-12">
+          <div v-if="isLoading" class="text-center">
+            <PokeLoading />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -33,13 +40,16 @@ import {
   fetchPokemonDataListByName,
 } from "../manager/pokemon";
 import PokeButton from "./base/PokeButton.vue";
+import PokeLoading from "./base/PokeLoading.vue";
 
 const emit = defineEmits(["open-filter", "search-pokemon"]);
 
 const searchPokemon = ref("");
 const searchTimeout = ref(null);
+let isLoading = ref(false);
 
 const getPokemonData = () => {
+  isLoading.value = true;
   searchTimeout.value = setTimeout(() => {
     if (searchPokemon.value !== "") {
       fetchPokemonDataByName();
@@ -53,6 +63,7 @@ const fetchPokemonDataByName = () => {
   fetchPokemonDataListByName({ name: searchPokemon.value })
     .then((response) => {
       const { data } = response.data;
+      isLoading.value = false;
       if (data?.pokemon?.id) {
         return emit("search-pokemon", [data.pokemon]);
       }
@@ -60,6 +71,7 @@ const fetchPokemonDataByName = () => {
     })
     .catch((e) => {
       console.log(e);
+      isLoading.value = false;
       return emit("search-pokemon", []);
     });
 };
@@ -68,13 +80,15 @@ const fetchPokemonData = () => {
   fetchPokemonDataList({ totalData: 16 })
     .then((response) => {
       const { data } = response.data;
+      isLoading.value = false;
       if (data?.length !== 0) {
-        return emit("search-pokemon", [...data.pokemons]);
+        return emit("search-pokemon", [...data.pokemons], false);
       }
     })
     .catch((e) => {
       console.log(e);
-      return emit("search-pokemon", []);
+      isLoading.value = false;
+      return emit("search-pokemon", [], false);
     });
 };
 </script>

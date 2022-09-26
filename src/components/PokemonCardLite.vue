@@ -1,5 +1,7 @@
 <template>
-  <div class="row align-items-center justify-content-space-around card">
+  <div
+    class="row align-items-center justify-content-space-around card-lite-container"
+  >
     <div :class="`favourite-wrapper`">
       <div
         :class="`pointer ${isFavourite ? 'favourite-item' : ''}`"
@@ -7,15 +9,8 @@
       >
         <i class="fas fa-heart"></i>
       </div>
-      <div
-        v-if="!hideFeature"
-        :class="`pointer ${isTeam ? 'team-item' : ''}`"
-        @click="addTeam"
-      >
-        <i class="fas fa-id-badge"></i>
-      </div>
     </div>
-    <div class="col-5 col-md-5 col-lg-12 card-header py-4">
+    <div class="col-5 col-md-5 card-header py-4">
       <div class="d-block">
         <img
           alt="Vue pokemon-logo"
@@ -25,7 +20,7 @@
         />
       </div>
     </div>
-    <div class="col-7 col-md-7 col-lg-12 card-content">
+    <div class="col-7 col-md-7 card-lite-content">
       <p class="text-pokemon-title">No. {{ props.number }}</p>
       <p class="text-pokemon-name">
         <strong>{{ props.name }}</strong>
@@ -33,9 +28,12 @@
       <p class="text-pokemon-title">max CP:</p>
       <p class="text-pokemon-cp">{{ props.maxCP }}</p>
       <p class="text-pokemon-title">Type</p>
-      <PokeChip :chip-types="props.types" />
+      <PokeChip
+        :chip-types="props.types"
+        :custom-class="'justify-content-start'"
+      />
     </div>
-    <div class="col-12">
+    <div class="col-12 mb-4">
       <router-link :to="`/pokemon-detail/${props.name}`">
         <PokeButton :btn-text="'Check Detail'" />
       </router-link>
@@ -98,20 +96,13 @@ const props = defineProps({
   },
 });
 
-const hideFeature = ref(true);
 let isFavourite = ref(props.isFavourite);
-let isTeam = ref(props.isTeam);
 
 const addFavourite = () => {
   isFavourite.value = !isFavourite.value;
   const pokemonData = { ...props, isFavourite: isFavourite.value };
 
-  return emit("add-favourite", pokemonData);
-};
-
-const addTeam = () => {
-  const pokemonData = { ...props };
-  return emit("add-team", pokemonData);
+  return emit("add-favourite", pokemonData, true);
 };
 </script>
 
@@ -123,6 +114,7 @@ const addTeam = () => {
   font-size: 1.5em;
   color: var(--vt-c-white);
   padding: 8px;
+  z-index: 999;
 }
 
 .favourite-item {
@@ -141,21 +133,21 @@ const addTeam = () => {
   transform: scale(1);
 }
 
-.card-content {
+.card-lite-content {
   padding: var(--padding-gap);
   color: #f6f6f6;
   font-size: 1em;
   text-align: left;
 }
 
-.card-content .text-pokemon-title {
+.card-lite-content .text-pokemon-title {
   font-size: 0.9em;
 }
-.card-content .text-pokemon-name {
+.card-lite-content .text-pokemon-name {
   font-size: 1.1em;
   word-break: break-all;
 }
-.card-content .text-pokemon-cp {
+.card-lite-content .text-pokemon-cp {
   color: var(--primary-text-orange);
   font-size: 1.2em;
   font-weight: bold;
@@ -174,6 +166,11 @@ const addTeam = () => {
 }
 
 @media (min-width: 1024px) {
+  .card-lite-container {
+    width: 100%;
+    max-width: 480px;
+  }
+
   .card-header .pokemon-logo {
     object-fit: cover;
     transform: scale(1);
@@ -185,8 +182,8 @@ const addTeam = () => {
     transition: 0.5s;
   }
 
-  .card-content {
-    text-align: center;
+  .card-lite-content {
+    text-align: left;
   }
 }
 </style>

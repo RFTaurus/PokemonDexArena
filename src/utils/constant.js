@@ -1,3 +1,9 @@
+export const PSEUDOLOCAL_DATABASE_PATH = {
+  pokemonFavourites: "pokemonFavourites",
+  pokemonTeams: "pokemonTeams",
+  historyPath: "historyPath",
+};
+
 export const POKEMON_TYPES = [
   "Normal",
   "Fire",

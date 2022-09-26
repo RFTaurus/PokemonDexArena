@@ -9,7 +9,7 @@
 
     <div
       ref="infiniteScrollComponent"
-      v-if="pokemons?.length !== 0"
+      v-if="!isLoading && pokemons?.length !== 0"
       class="row align-items-center justify-content-space-between text-center pb-4"
     >
       <div
@@ -18,11 +18,14 @@
         class="col-12 col-md-6 col-lg-3 my-4"
       >
         <PokemonCard
+          :id="pokemon.id"
           :image="pokemon.image"
           :number="pokemon.number"
           :name="pokemon.name"
           :max-c-p="pokemon.maxCP"
           :types="pokemon.types"
+          :is-favourite="pokemon.isFavourite"
+          :is-team="pokemon.isTeam"
           @show-pokemon-image="showModalImage(pokemon.image)"
           @add-favourite="addFavourite"
           @add-team="addTeam"
@@ -30,8 +33,23 @@
       </div>
     </div>
     <div v-else>
-      <h3 class="text-center">There is no Pokemon Card List</h3>
+      <div v-if="isLoading" class="text-center">
+        <PokeLoading />
+      </div>
+      <div v-else>
+        <h3 class="text-center">There is no Pokemon Card List</h3>
+      </div>
     </div>
+
+    <PokeSticky :bottom="0" :right="0">
+      <div class="floating-container">
+        <div class="floating-button-wrapper">
+          <div class="pointer floating-button" @click="showModalFavourites">
+            <i class="fas fa-heart"></i>
+          </div>
+        </div>
+      </div>
+    </PokeSticky>
 
     <PokeModal :modal-active="modalActive" @close-modal="showModal">
       <div>
@@ -80,32 +98,89 @@
         </div>
       </div>
     </PokeModal>
+
+    <PokeModal
+      :modal-active="modalActiveFavourites"
+      @close-modal="showModalFavourites"
+    >
+      <h3 class="text-center">Favourites</h3>
+      <div class="parent-modal-scroller">
+        <div class="modal-scroller">
+          <div v-if="pokemonFavourites && pokemonFavourites.length !== 0">
+            <div
+              v-for="pokemon in pokemonFavourites"
+              :key="pokemon.id"
+              class="col-12 my-4 card-lite"
+            >
+              <PokemonCardLite
+                v-if="pokemon.isFavourite"
+                :id="pokemon.id"
+                :image="pokemon.image"
+                :number="pokemon.number"
+                :name="pokemon.name"
+                :max-c-p="pokemon.maxCP"
+                :types="pokemon.types"
+                :is-favourite="pokemon.isFavourite"
+                @add-favourite="addFavourite"
+              />
+            </div>
+          </div>
+          <div v-else>
+            <div class="text-center my-8">
+              <div class="pokedex-logo-wrapper">
+                <img
+                  alt="PokemonDex Arena logo"
+                  class="pokedex-logo"
+                  src="@/assets/pokedex-logo.png"
+                />
+              </div>
+              <p>There's no Favourites Pokemon yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </PokeModal>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
+import { fetchPokemonDataList } from "../manager/pokemon";
+import { setDataPath, getDataPath } from "../store/pseudolocalDatabase";
+import { PSEUDOLOCAL_DATABASE_PATH, POKEMON_TYPES } from "../utils/constant";
+import { sortArr } from "../utils/common";
 import PokemonCard from "../components/PokemonCard.vue";
 import PokeModal from "../components/base/PokeModal.vue";
 import PokemonControlSection from "../components/PokemonControlSection.vue";
-import { POKEMON_TYPES } from "../utils/constant";
-import { fetchPokemonDataList } from "../manager/pokemon";
 import PokeButton from "../components/base/PokeButton.vue";
 import PokePageTitle from "../components/base/PokePageTitle.vue";
+import PokeSticky from "../components/base/PokeSticky.vue";
+import PokemonCardLite from "../components/PokemonCardLite.vue";
+import PokeLoading from "../components/base/PokeLoading.vue";
 
 const modalActive = ref(null);
 const modalActiveImage = ref(null);
+const modalActiveFavourites = ref(null);
 const pokemonTypes = ref(POKEMON_TYPES);
 const pokemonsOriginal = ref([]);
 const pokemons = ref([]);
+const pokemonFavouritesPath = ref(PSEUDOLOCAL_DATABASE_PATH.pokemonFavourites);
+const pokemonTeamsPath = ref(PSEUDOLOCAL_DATABASE_PATH.pokemonTeams);
+const pokemonFavourites = ref(getDataPath(pokemonFavouritesPath.value));
+const pokemonTeams = ref(getDataPath(pokemonTeamsPath.value));
 const infiniteScrollComponent = ref(null);
 const defaultImage = ref("../assets/pokedex-logo.png");
 let selectedImage = ref("../assets/pokedex-logo.png");
 let checkedFilter = ref(POKEMON_TYPES);
 let isLoading = ref(false);
+let isSearch = ref(false);
 
 onMounted(() => {
   fetchPokemonData();
+  pokemonFavourites.value.sort(
+    (firstItems, nextItem) =>
+      Number(firstItems.number) - Number(nextItem.number)
+  );
   setTimeout(() => {
     window.addEventListener("scroll", infiniteScroll);
   }, 1000);
@@ -124,11 +199,17 @@ const showModalImage = (image = defaultImage.value) => {
   modalActiveImage.value = !modalActiveImage.value;
 };
 
+const showModalFavourites = () => {
+  isLoading.value = false;
+  modalActiveFavourites.value = !modalActiveFavourites.value;
+};
+
 const getImageUrl = (image = defaultImage.value) => {
   return new URL(image, import.meta.url).href;
 };
 
-const getPokemonData = (pokemonData) => {
+const getPokemonData = (pokemonData, searchStatus = true) => {
+  isSearch.value = searchStatus;
   pokemons.value = pokemonData;
 };
 
@@ -148,17 +229,50 @@ const applyFilter = () => {
   showModal();
 };
 
-const addFavourite = (pokemonData) => {
-  console.log("cek pokemonData Favourite : ", pokemonData);
+const addFavourite = (pokemonData, isLite = false) => {
+  const exist = pokemonFavourites.value.some((item) => {
+    return item.id === pokemonData.id;
+  });
+  if (exist) {
+    pokemonFavourites.value = pokemonFavourites.value.filter((item) => {
+      return item.id !== pokemonData.id;
+    });
+  } else {
+    pokemonFavourites.value.push(pokemonData);
+  }
+  pokemonFavourites.value = sortArr(pokemonFavourites.value);
+  const index = pokemons.value.findIndex((item) => {
+    return item.id === pokemonData.id;
+  });
+  pokemons.value[index].isFavourite = pokemonData.isFavourite;
+  setDataPath(pokemonFavouritesPath.value, pokemonFavourites.value);
+  if (isLite) {
+    isLoading.value = true;
+    fetchPokemonData();
+  }
 };
 
 const addTeam = (pokemonData) => {
-  console.log("cek pokemonData Team : ", pokemonData);
+  if (pokemonData.isTeam && pokemonTeams?.value?.length >= 6) {
+    pokemonTeams.value = pokemonTeams.value.filter((item) => {
+      return item.id !== pokemonData.id;
+    });
+    setDataPath(pokemonTeamsPath.value, pokemonTeams.value);
+  } else if (!pokemonData.isTeam && pokemonTeams?.value?.length < 6) {
+    pokemonTeams.value.push({ ...pokemonData, isTeam: !pokemonData.isTeam });
+    setDataPath(pokemonTeamsPath.value, pokemonTeams.value);
+  } else {
+    alert("Team Full. (Max. 6 Pokemon)");
+  }
 };
 
 const infiniteScroll = () => {
   let element = infiniteScrollComponent.value;
-  if (element.getBoundingClientRect().bottom <= window.innerHeight + 1) {
+  if (
+    !isSearch.value &&
+    element &&
+    element.getBoundingClientRect().bottom <= window.innerHeight + 1
+  ) {
     fetchPokemonData();
   }
 };
@@ -168,9 +282,6 @@ const fetchPokemonData = () => {
     pokemonsOriginal?.value?.length !== 0
       ? pokemonsOriginal?.value?.length + 16
       : 16;
-  if (pokemonsOriginal?.value?.length !== totalData) {
-    isLoading.value = true;
-  }
   fetchPokemonDataList({
     totalData,
   })
@@ -180,7 +291,7 @@ const fetchPokemonData = () => {
         pokemonsOriginal.value = [...data.pokemons];
         pokemonsOriginal.value = pokemonsOriginal.value.map((item) => ({
           ...item,
-          isFavourite: false,
+          isFavourite: isFavouritePokemon(item.id),
           isTeam: false,
         }));
         pokemons.value = [...pokemonsOriginal.value];
@@ -199,6 +310,13 @@ const fetchPokemonData = () => {
       isLoading.value = false;
       return;
     });
+};
+
+const isFavouritePokemon = (id) => {
+  const isHit = pokemonFavourites.value.some((item) => {
+    return item.id === id;
+  });
+  return isHit;
 };
 </script>
 
@@ -278,5 +396,49 @@ const fetchPokemonData = () => {
   width: 100%;
   height: auto;
   border-radius: var(--border-radius-quarter);
+}
+
+.floating-container {
+  padding: 0px 16px;
+}
+.floating-button-wrapper {
+  background-color: var(--vt-c-white);
+  padding: 0px 6px;
+  border-radius: 50%;
+}
+
+.floating-button-wrapper .floating-button {
+  font-size: 1.2em;
+  color: red;
+}
+
+.parent-modal-scroller {
+  height: auto;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.parent-modal-scroller {
+  overflow-y: auto;
+}
+
+.pokedex-logo-wrapper {
+  display: inline-block;
+  width: 100%;
+  max-width: 160px;
+}
+
+.pokedex-logo {
+  width: 100%;
+  height: auto;
+}
+
+.card-lite {
+  border-bottom: 2px solid var(--primary-text-orange);
+  padding: var(--margin-gap) auto;
+}
+
+.card-lite:last-of-type {
+  border-bottom: none;
 }
 </style>

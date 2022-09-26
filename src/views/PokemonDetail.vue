@@ -17,6 +17,10 @@
       </div>
     </div>
 
+    <div v-if="isLoading" class="text-center my-4">
+      <PokeLoading />
+    </div>
+
     <div v-if="pokemonData?.id" class="pokemon-detail-frame my-4 py-4">
       <PokemonDescriptionSection
         :image="pokemonData?.image"
@@ -62,15 +66,19 @@
         :is-array="true"
       />
 
-      <PokemonTable
-        :pokemon-data="pokemonData?.evolutions"
-        :pokemon-table-title="'Evolution Line'"
-        :pokemon-table-header="evolutionLineTableHeader"
-        :is-array="true"
-        :is-evolution-line="true"
-        :pokemon-table-width="'25%'"
-        @btn-action="gotoLink"
-      />
+      <div
+        v-if="pokemonData?.evolutions && pokemonData?.evolutions?.length !== 0"
+      >
+        <PokemonTable
+          :pokemon-data="pokemonData?.evolutions"
+          :pokemon-table-title="'Evolution Line'"
+          :pokemon-table-header="evolutionLineTableHeader"
+          :is-array="true"
+          :is-evolution-line="true"
+          :pokemon-table-width="'25%'"
+          @btn-action="gotoLink"
+        />
+      </div>
     </div>
     <div v-else>
       <h2 class="text-center">Failed to Fetch Data... Please Try Again!</h2>
@@ -82,10 +90,13 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { fetchPokemonDataListDetail } from "../manager/pokemon";
+import { setDataPath, getDataPath } from "../store/pseudolocalDatabase";
+import { PSEUDOLOCAL_DATABASE_PATH } from "../utils/constant";
 import PokePageTitle from "../components/base/PokePageTitle.vue";
 import PokeButton from "../components/base/PokeButton.vue";
 import PokemonDescriptionSection from "../components/PokemonDescriptionSection.vue";
 import PokemonTable from "../components/PokemonTable.vue";
+import PokeLoading from "../components/base/PokeLoading.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -142,28 +153,39 @@ const evolutionLineTableHeader = ref([
     isCenter: false,
   },
 ]);
+const historyPath = ref(PSEUDOLOCAL_DATABASE_PATH.historyPath);
+const historyPathValue = ref(getDataPath(historyPath.value));
 let routeName = ref(route.params.name);
-let historyPath = ref([]);
+let isLoading = ref(false);
 
 onMounted(() => {
+  isLoading.value = true;
   if (routeName.value !== "") {
-    historyPath.value.push(routeName.value);
+    if (historyPathValue.value.length === 0) {
+      historyPathValue.value.push(routeName.value);
+      setDataPath(historyPath.value, historyPathValue.value);
+    }
     fetchPokemonDataByName();
   } else {
+    historyPathValue.value = [];
+    setDataPath(historyPath.value, historyPathValue.value);
+    isLoading.value = false;
     router.push("/");
   }
 });
 
 watch(routeName, (newValue, oldValue) => {
   if (newValue !== oldValue) {
+    isLoading.value = true;
     fetchPokemonDataByName();
   }
 });
 
 const goBack = () => {
   router.back();
-  historyPath.value.pop();
-  routeName.value = historyPath.value[historyPath.value.length - 1];
+  historyPathValue.value.pop();
+  routeName.value = historyPathValue.value[historyPathValue.value.length - 1];
+  setDataPath(historyPath.value, historyPathValue.value);
   window.scrollTo(0, 0);
 };
 
@@ -173,7 +195,8 @@ const gotoCardList = () => {
 
 const gotoLink = (name) => {
   router.push(`/pokemon-detail/${name}`);
-  historyPath.value.push(name);
+  historyPathValue.value.push(name);
+  setDataPath(historyPath.value, historyPathValue.value);
   routeName.value = name;
   window.scrollTo(0, 0);
 };
@@ -184,12 +207,13 @@ const fetchPokemonDataByName = () => {
       const { data } = response.data;
       if (data?.pokemon?.id) {
         pokemonData.value = data.pokemon;
-        console.log("cek pokemonData.value : ", pokemonData.value);
       }
+      isLoading.value = false;
       return;
     })
     .catch((e) => {
       console.log(e);
+      isLoading.value = false;
       return;
     });
 };

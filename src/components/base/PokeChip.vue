@@ -86,5 +86,9 @@ const pokemonChipTypeBackground = ref(POKEMON_TYPES_COLOR);
     justify-content: center;
     font-size: 1em;
   }
+
+  .justify-content-start {
+    justify-content: flex-start;
+  }
 }
 </style>

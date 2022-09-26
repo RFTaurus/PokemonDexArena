@@ -47,6 +47,8 @@
   --border-radius-quarter: 10px;
   --padding-gap: 12px;
   --padding-gap-half: 6px;
+  --margin-gap: 16px;
+  --margin-gap-half: 8px;
 }
 
 @media (prefers-color-scheme: dark) {
