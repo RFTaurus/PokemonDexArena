@@ -1,27 +1,38 @@
 <template>
   <div class="row align-items-center justify-content-space-around card">
+    <div :class="`favourite-wrapper`">
+      <div
+        :class="`pointer ${isFavourite ? 'favourite-item' : ''}`"
+        @click="addFavourite"
+      >
+        <i class="fas fa-heart"></i>
+      </div>
+      <div :class="`pointer ${isTeam ? 'team-item' : ''}`" @click="addTeam">
+        <i class="fas fa-id-badge"></i>
+      </div>
+    </div>
     <div class="col-5 col-md-5 col-lg-12 card-header py-4">
       <div class="d-block">
         <img
           alt="Vue pokemon-logo"
           class="pokemon-logo pointer"
-          :src="image"
+          :src="props.image"
           @click="$emit('show-pokemon-image')"
         />
       </div>
     </div>
     <div class="col-7 col-md-7 col-lg-12 card-content">
-      <p class="text-pokemon-title">No. {{ number }}</p>
+      <p class="text-pokemon-title">No. {{ props.number }}</p>
       <p class="text-pokemon-name">
-        <strong>{{ name }}</strong>
+        <strong>{{ props.name }}</strong>
       </p>
       <p class="text-pokemon-title">max CP:</p>
-      <p class="text-pokemon-cp">{{ maxCP }}</p>
+      <p class="text-pokemon-cp">{{ props.maxCP }}</p>
       <p class="text-pokemon-title">Type</p>
-      <PokeChip :chip-types="types" />
+      <PokeChip :chip-types="props.types" />
     </div>
     <div class="col-12">
-      <router-link :to="`/pokemon-detail/${name}`">
+      <router-link :to="`/pokemon-detail/${props.name}`">
         <PokeButton :btn-text="'Check Detail'" />
       </router-link>
     </div>
@@ -29,11 +40,18 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import PokeButton from "./base/PokeButton.vue";
 import PokeChip from "./base/PokeChip.vue";
 
-defineEmits(["show-pokemon-image", "goto-pokemon-detail"]);
-defineProps({
+const emit = defineEmits([
+  "show-pokemon-image",
+  "goto-pokemon-detail",
+  "add-favourite",
+  "add-team",
+]);
+
+const props = defineProps({
   image: {
     type: String,
     default: () => {
@@ -61,10 +79,52 @@ defineProps({
     default: () => [],
     required: true,
   },
+  isFavourite: {
+    type: Boolean,
+    default: false,
+  },
+  isTeam: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+let isFavourite = ref(props.isFavourite);
+let isTeam = ref(props.isTeam);
+
+const addFavourite = () => {
+  isFavourite.value = !isFavourite.value;
+  const pokemonData = { ...props, isFavourite: isFavourite.value };
+
+  return emit("add-favourite", pokemonData);
+};
+
+const addTeam = () => {
+  isTeam.value = !isTeam.value;
+  const pokemonData = { ...props, isTeam: isTeam.value };
+
+  return emit("add-team", pokemonData);
+};
 </script>
 
 <style lang="css" scoped>
+.favourite-wrapper {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font-size: 1.5em;
+  color: var(--vt-c-white);
+  padding: 8px;
+}
+
+.favourite-item {
+  color: red;
+}
+
+.team-item {
+  color: #78c850;
+}
+
 .card-header .pokemon-logo {
   width: 100%;
   max-width: 96px;

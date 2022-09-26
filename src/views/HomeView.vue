@@ -24,6 +24,8 @@
           :max-c-p="pokemon.maxCP"
           :types="pokemon.types"
           @show-pokemon-image="showModalImage(pokemon.image)"
+          @add-favourite="addFavourite"
+          @add-team="addTeam"
         />
       </div>
     </div>
@@ -146,6 +148,14 @@ const applyFilter = () => {
   showModal();
 };
 
+const addFavourite = (pokemonData) => {
+  console.log("cek pokemonData Favourite : ", pokemonData);
+};
+
+const addTeam = (pokemonData) => {
+  console.log("cek pokemonData Team : ", pokemonData);
+};
+
 const infiniteScroll = () => {
   let element = infiniteScrollComponent.value;
   if (element.getBoundingClientRect().bottom <= window.innerHeight + 1) {
@@ -168,6 +178,11 @@ const fetchPokemonData = () => {
       const { data } = response.data;
       if (data?.length !== 0) {
         pokemonsOriginal.value = [...data.pokemons];
+        pokemonsOriginal.value = pokemonsOriginal.value.map((item) => ({
+          ...item,
+          isFavourite: false,
+          isTeam: false,
+        }));
         pokemons.value = [...pokemonsOriginal.value];
         pokemons.value = pokemons.value.filter((item) => {
           return item.types.some((type) => {
