@@ -6,7 +6,7 @@
         <div class="col-12 detail-content">
           <p class="text-pokemon-highlight">{{ pokemonTableTitle }}</p>
         </div>
-        <div class="col-12 detail-content">
+        <div v-if="pokemonData" class="col-12 detail-content">
           <table class="text-left">
             <tr class="table-header">
               <th
@@ -71,6 +71,9 @@
               </tr>
             </div>
           </table>
+        </div>
+        <div v-else class="col-12 detail-content">
+          <p class="text-pokemon-exception">No {{ pokemonTableTitle }}</p>
         </div>
       </div>
     </div>
