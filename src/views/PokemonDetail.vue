@@ -66,19 +66,15 @@
         :is-array="true"
       />
 
-      <div
-        v-if="pokemonData?.evolutions && pokemonData?.evolutions?.length !== 0"
-      >
-        <PokemonTable
-          :pokemon-data="pokemonData?.evolutions"
-          :pokemon-table-title="'Evolution Line'"
-          :pokemon-table-header="evolutionLineTableHeader"
-          :is-array="true"
-          :is-evolution-line="true"
-          :pokemon-table-width="'25%'"
-          @btn-action="gotoLink"
-        />
-      </div>
+      <PokemonTable
+        :pokemon-data="pokemonData?.evolutions"
+        :pokemon-table-title="'Evolution Line'"
+        :pokemon-table-header="evolutionLineTableHeader"
+        :is-array="true"
+        :is-evolution-line="true"
+        :pokemon-table-width="'25%'"
+        @btn-action="gotoLink"
+      />
     </div>
     <div v-else>
       <h2 class="text-center">Failed to Fetch Data... Please Try Again!</h2>

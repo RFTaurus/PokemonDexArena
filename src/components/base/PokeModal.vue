@@ -102,7 +102,7 @@ defineProps({
 @media (min-width: 768px) {
   .modal-content {
     width: 100%;
-    max-width: 480px;
+    max-width: 520px;
     align-self: flex-start;
     margin-top: 16px;
   }

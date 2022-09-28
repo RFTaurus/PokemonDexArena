@@ -214,12 +214,17 @@ const getPokemonData = (pokemonData, searchStatus = true) => {
 };
 
 const resetFilterData = async () => {
+  isLoading.value = true;
   checkedFilter.value = POKEMON_TYPES;
   pokemons.value = [...pokemonsOriginal.value];
   showModal();
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 1000);
 };
 
 const applyFilter = () => {
+  isLoading.value = true;
   pokemons.value = [...pokemonsOriginal.value];
   pokemons.value = pokemons.value.filter((item) => {
     return item.types.some((type) => {
@@ -227,6 +232,9 @@ const applyFilter = () => {
     });
   });
   showModal();
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 1000);
 };
 
 const addFavourite = (pokemonData, isLite = false) => {

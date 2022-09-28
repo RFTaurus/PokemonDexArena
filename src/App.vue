@@ -2,7 +2,7 @@
   <header>
     <!-- <SiteNavigation /> -->
   </header>
-  <div class="text-center">
+  <div class="text-center my-4">
     <div class="pokedex-logo-wrapper">
       <img
         alt="PokemonDex Arena logo"
