@@ -1,6 +1,6 @@
 <template>
   <header>
-    <!-- <SiteNavigation /> -->
+    <SiteNavigation />
   </header>
   <div class="text-center my-4">
     <div class="pokedex-logo-wrapper">
@@ -18,6 +18,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { RouterView } from "vue-router";
+import SiteNavigation from "./components/SiteNavigation.vue";
 import { PSEUDOLOCAL_DATABASE_PATH } from "./utils/constant";
 import { initDataPath } from "./store/pseudolocalDatabase";
 

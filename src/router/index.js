@@ -20,6 +20,11 @@ const router = createRouter({
       component: () => import("../views/PokemonDetail.vue"),
     },
     {
+      path: "/team",
+      name: "team",
+      component: () => import("../views/TeamView.vue"),
+    },
+    {
       path: "/:pathMatch(.*)*",
       redirect: "/",
     },
