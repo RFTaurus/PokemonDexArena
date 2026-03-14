@@ -11,6 +11,10 @@
 
 - Always use Context7 when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
 
+## FIGMA MCP Integration
+
+- `Capture Figma <Figma Url>`: when user trigger this, use this to directly connect to figma "Start a local server for my app and capture the UI in <Figma Url>" If the URL doesn’t correspond to a Figma Design file, your client defaults to creating a new file instead.
+
 ## Repository Rule Files
 
 - `.cursorrules`: not found
@@ -148,3 +152,4 @@ src/
 2. Run `npm run build` for integration safety.
 3. Update this file when conventions or commands change.
 4. Preserve current JavaScript/Vue conventions unless asked to refactor globally.
+5. opencode can try to looks skills from ".agents/skills/<name>/SKILL.md" for specific project

@@ -33,6 +33,7 @@
     </div>
 
     <div
+      ref="infiniteScrollComponent"
       v-else-if="pokemons?.length !== 0"
       class="row align-items-center justify-content-space-between text-center pb-4"
     >
@@ -60,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { fetchPokemonDataList } from "../manager/pokemon";
 import { setDataPath, getDataPath } from "../store/pseudolocalDatabase";
 import { PSEUDOLOCAL_DATABASE_PATH } from "../utils/constant";
@@ -70,6 +71,10 @@ import PokemonControlSection from "../components/PokemonControlSection.vue";
 import TeamSection from "../components/TeamSection.vue";
 import PokemonCard from "../components/PokemonCard.vue";
 import PokeLoading from "../components/base/PokeLoading.vue";
+
+// Infinite scroll scaffolding
+const infiniteScrollComponent = ref(null);
+const isSearch = ref(false);
 
 const pokemonTeamsPath = ref(PSEUDOLOCAL_DATABASE_PATH.pokemonTeams);
 const pokemonTeams = ref(getDataPath(pokemonTeamsPath.value).slice(0, 6));
@@ -81,7 +86,26 @@ const isLoading = ref(false);
 onMounted(() => {
   setDataPath(pokemonTeamsPath.value, pokemonTeams.value);
   fetchPokemonData();
+  // Attach infinite scroll listener after initial render
+  setTimeout(() => {
+    window.addEventListener("scroll", infiniteScroll);
+  }, 1000);
 });
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", infiniteScroll);
+});
+
+const infiniteScroll = () => {
+  let element = infiniteScrollComponent.value;
+  if (
+    !isSearch.value &&
+    element &&
+    element.getBoundingClientRect().bottom <= window.innerHeight + 1
+  ) {
+    fetchPokemonData();
+  }
+};
 
 const isTeamPokemon = (id) => {
   return pokemonTeams.value.some((item) => item.id === id);
@@ -113,7 +137,8 @@ const saveTeam = () => {
   syncTeamFlag();
 };
 
-const getPokemonData = (pokemonData) => {
+const getPokemonData = (pokemonData, searchStatus = true) => {
+  isSearch.value = searchStatus;
   pokemons.value = mapPokemonList(pokemonData);
 };
 
@@ -159,8 +184,12 @@ const clearTeam = () => {
 
 const fetchPokemonData = () => {
   isLoading.value = true;
+  const totalData =
+    pokemonsOriginal.value?.length !== 0
+      ? pokemonsOriginal.value.length + 16
+      : 16;
   fetchPokemonDataList({
-    totalData: 151,
+    totalData,
   })
     .then((response) => {
       const { data } = response.data;
