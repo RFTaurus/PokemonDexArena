@@ -7,7 +7,7 @@
         :class="`pointer ${isFavourite ? 'favourite-item' : ''}`"
         @click="addFavourite"
       >
-        <i class="fas fa-heart"></i>
+        <i class="ri-heart-fill"></i>
       </div>
     </div>
     <div class="col-5 col-md-5 card-header py-4">
@@ -127,10 +127,18 @@ const addFavourite = () => {
 
 .card-header .pokemon-logo {
   width: 100%;
-  max-width: 96px;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   border-radius: var(--border-radius-quarter);
-  transform: scale(1);
+}
+
+.card-header .d-block {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-lite-content {
@@ -153,33 +161,10 @@ const addFavourite = () => {
   font-weight: bold;
 }
 
-@media (min-width: 768px) {
-  .card-header .pokemon-logo {
-    width: 100%;
-    max-width: 160px;
-    height: auto;
-    min-height: 160px;
-    max-height: 160px;
-    object-fit: contain;
-    border-radius: var(--border-radius-quarter);
-  }
-}
-
 @media (min-width: 1024px) {
   .card-lite-container {
     width: 100%;
     max-width: 480px;
-  }
-
-  .card-header .pokemon-logo {
-    object-fit: cover;
-    transform: scale(1);
-    transition: 0.5s;
-  }
-
-  .card-header .pokemon-logo:hover {
-    transform: scale(1.1);
-    transition: 0.5s;
   }
 
   .card-lite-content {

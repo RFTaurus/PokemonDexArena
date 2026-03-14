@@ -5,14 +5,14 @@
         :class="`pointer ${isFavourite ? 'favourite-item' : ''}`"
         @click="addFavourite"
       >
-        <i class="fas fa-heart"></i>
+        <i class="ri-heart-fill"></i>
       </div>
       <div
-        v-if="!hideFeature"
-        :class="`pointer ${isTeam ? 'team-item' : ''}`"
+        v-if="props.showTeamAction"
+        :class="`pointer ${props.isTeam ? 'team-item' : ''}`"
         @click="addTeam"
       >
-        <i class="fas fa-id-badge"></i>
+        <i class="ri-shield-user-line"></i>
       </div>
     </div>
     <div class="col-5 col-md-5 col-lg-12 card-header py-4">
@@ -96,11 +96,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showTeamAction: {
+    type: Boolean,
+    default: true,
+  },
 });
 
-const hideFeature = ref(true);
 let isFavourite = ref(props.isFavourite);
-let isTeam = ref(props.isTeam);
 
 const addFavourite = () => {
   isFavourite.value = !isFavourite.value;
@@ -135,10 +137,18 @@ const addTeam = () => {
 
 .card-header .pokemon-logo {
   width: 100%;
-  max-width: 96px;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   border-radius: var(--border-radius-quarter);
-  transform: scale(1);
+}
+
+.card-header .d-block {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-content {
@@ -161,30 +171,7 @@ const addTeam = () => {
   font-weight: bold;
 }
 
-@media (min-width: 768px) {
-  .card-header .pokemon-logo {
-    width: 100%;
-    max-width: 160px;
-    height: auto;
-    min-height: 160px;
-    max-height: 160px;
-    object-fit: contain;
-    border-radius: var(--border-radius-quarter);
-  }
-}
-
 @media (min-width: 1024px) {
-  .card-header .pokemon-logo {
-    object-fit: cover;
-    transform: scale(1);
-    transition: 0.5s;
-  }
-
-  .card-header .pokemon-logo:hover {
-    transform: scale(1.1);
-    transition: 0.5s;
-  }
-
   .card-content {
     text-align: center;
   }

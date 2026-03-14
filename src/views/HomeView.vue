@@ -7,6 +7,14 @@
       @search-pokemon="getPokemonData"
     />
 
+    <div class="row justify-content-center mt-2 mb-4">
+      <div class="col-8 col-md-4 col-lg-3">
+        <router-link to="/team">
+          <PokeButton :is-secondary="true" :btn-text="'Manage Team'" />
+        </router-link>
+      </div>
+    </div>
+
     <div
       ref="infiniteScrollComponent"
       v-if="!isLoading && pokemons?.length !== 0"
@@ -45,7 +53,7 @@
       <div class="floating-container">
         <div class="floating-button-wrapper">
           <div class="pointer floating-button" @click="showModalFavourites">
-            <i class="fas fa-heart"></i>
+            <i class="ri-heart-fill"></i>
           </div>
         </div>
       </div>
@@ -210,7 +218,11 @@ const getImageUrl = (image = defaultImage.value) => {
 
 const getPokemonData = (pokemonData, searchStatus = true) => {
   isSearch.value = searchStatus;
-  pokemons.value = pokemonData;
+  pokemons.value = pokemonData.map((item) => ({
+    ...item,
+    isFavourite: isFavouritePokemon(item.id),
+    isTeam: isTeamPokemon(item.id),
+  }));
 };
 
 const resetFilterData = async () => {
@@ -261,17 +273,23 @@ const addFavourite = (pokemonData, isLite = false) => {
 };
 
 const addTeam = (pokemonData) => {
-  if (pokemonData.isTeam && pokemonTeams?.value?.length >= 6) {
+  const exist = pokemonTeams.value.some((item) => {
+    return item.id === pokemonData.id;
+  });
+
+  if (exist) {
     pokemonTeams.value = pokemonTeams.value.filter((item) => {
       return item.id !== pokemonData.id;
     });
-    setDataPath(pokemonTeamsPath.value, pokemonTeams.value);
-  } else if (!pokemonData.isTeam && pokemonTeams?.value?.length < 6) {
+  } else if (pokemonTeams?.value?.length < 6) {
     pokemonTeams.value.push({ ...pokemonData, isTeam: !pokemonData.isTeam });
-    setDataPath(pokemonTeamsPath.value, pokemonTeams.value);
   } else {
     alert("Team Full. (Max. 6 Pokemon)");
+    return;
   }
+
+  setDataPath(pokemonTeamsPath.value, pokemonTeams.value);
+  syncTeamFlag();
 };
 
 const infiniteScroll = () => {
@@ -300,7 +318,7 @@ const fetchPokemonData = () => {
         pokemonsOriginal.value = pokemonsOriginal.value.map((item) => ({
           ...item,
           isFavourite: isFavouritePokemon(item.id),
-          isTeam: false,
+          isTeam: isTeamPokemon(item.id),
         }));
         pokemons.value = [...pokemonsOriginal.value];
         pokemons.value = pokemons.value.filter((item) => {
@@ -325,6 +343,24 @@ const isFavouritePokemon = (id) => {
     return item.id === id;
   });
   return isHit;
+};
+
+const isTeamPokemon = (id) => {
+  const isHit = pokemonTeams.value.some((item) => {
+    return item.id === id;
+  });
+  return isHit;
+};
+
+const syncTeamFlag = () => {
+  pokemonsOriginal.value = pokemonsOriginal.value.map((item) => ({
+    ...item,
+    isTeam: isTeamPokemon(item.id),
+  }));
+  pokemons.value = pokemons.value.map((item) => ({
+    ...item,
+    isTeam: isTeamPokemon(item.id),
+  }));
 };
 </script>
 
